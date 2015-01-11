@@ -19,11 +19,9 @@ public class CoffeeMaker {
 
 
     final Pot pot;
-
     final Heater heater;
 
     public CoffeeMaker(Pot pot, Heater heater) {
-
         this.pot = pot;
         this.heater = heater;
     }
