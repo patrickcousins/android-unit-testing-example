@@ -25,6 +25,9 @@ import static org.fest.assertions.api.Assertions.*;
 
 /**
  * Class name must end with "Test" (not "Tests" plural)
+ * We run it with Roboletric so it runs in a JVM instead of an emulator.
+ * It is possible to run plain Java tests as JUnit this way also, but any Android specific code
+ * requires either an emulator or JVM
  */
 @RunWith(RobolectricTestRunner.class)
 public class CoffeeTest {
