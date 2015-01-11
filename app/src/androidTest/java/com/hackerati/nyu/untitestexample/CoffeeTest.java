@@ -26,11 +26,9 @@ import static org.fest.assertions.api.Assertions.*;
 @RunWith(RobolectricTestRunner.class)
 public class CoffeeTest {
 
-
     Pot mockPot;
     Heater mockHeater;
     CoffeeMaker coffeeMaker;
-
 
     @Before
     public void setup() {
@@ -47,13 +45,9 @@ public class CoffeeTest {
         when(mockPot.getSize()).thenReturn(-1);
         when(mockHeater.getTemp()).thenReturn(5000);
 
-        assertThat(coffeeMaker.getCoffee()).isNull();
+        assertThat(coffeeMaker.getCoffee()).isNotNull();
 
     }
-
-
-
-
 
 
 }
