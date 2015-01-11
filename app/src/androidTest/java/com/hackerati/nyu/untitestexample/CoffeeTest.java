@@ -66,4 +66,40 @@ public class CoffeeTest {
     }
 
 
+    /**
+     * TODOs
+     *
+     * //Verify
+     * //Check that a method is called, how many times, and what type of argument is passed to it.
+     *
+     * verify(mockedObj).someMethod(any(MockResponseObj.class));
+     * verify(mockedObj, times(1)).someMethod(any(MockResponseObj.class));
+     *
+     * //Arguments
+     * //Capture arguments for further assertions
+     *
+     * ArgumentCaptor<MockResponseObj> arg = ArgumentCaptor.forClass(MockResponseObj.class);
+     * verify(mockedObj).someMethod(arg.capture());
+     * assertThat(arg).isNotNull();
+     *
+     * //Spy
+     * //return a predetermined value for testing
+     *
+     * doReturn(predeterminedTestValue).when(spyObject).someMethod()
+     *
+     *
+     * //Exceptions
+     * //Make sure invalid code throws the correct exception
+     * 
+     * when(realObject).someMethod("Some invalid argument");
+     * then(caughtException())
+     *      .isInstanceOf(IllegalArgumentException.class)
+     *      .hasMessage("Some custom message you expect");
+     *
+     *
+     * import static com.googlecode.catchexception.CatchException.caughtException;
+     import static com.googlecode.catchexception.apis.CatchExceptionBdd.then;
+     import static com.googlecode.catchexception.apis.CatchExceptionBdd.when;
+     */
+
 }
