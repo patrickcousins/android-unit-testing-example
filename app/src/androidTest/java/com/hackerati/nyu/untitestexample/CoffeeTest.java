@@ -23,6 +23,9 @@ import org.robolectric.RobolectricTestRunner;
 import static org.mockito.Mockito.*;
 import static org.fest.assertions.api.Assertions.*;
 
+/**
+ * Class name must end with "Test" (not "Tests" plural)
+ */
 @RunWith(RobolectricTestRunner.class)
 public class CoffeeTest {
 
@@ -30,13 +33,23 @@ public class CoffeeTest {
     Heater mockHeater;
     CoffeeMaker coffeeMaker;
 
+
+    /**
+     * Runs before every test
+     */
     @Before
     public void setup() {
         mockPot = mock(Pot.class);
         mockHeater = mock(Heater.class);
     }
 
-
+    /**
+     * Tests are found based on the annotation and/or name of the method
+     *
+     * Android's naming convention for tests:
+     *
+     * public void testRealMethodName_descriptionOfWhatIsBeingTested()
+     */
     @Test
     public void testGetCoffee_isNotNull() {
 
