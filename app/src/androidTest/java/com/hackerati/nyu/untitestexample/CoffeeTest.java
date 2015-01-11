@@ -51,7 +51,7 @@ public class CoffeeTest {
      *
      * Android's naming convention for tests:
      *
-     * public void testRealMethodName_descriptionOfWhatIsBeingTested()
+     * public void testMethodName_whatIsBeingTested()
      */
     @Test
     public void testGetCoffee_isNotNull() {
