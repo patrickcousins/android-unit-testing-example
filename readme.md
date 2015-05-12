@@ -1,5 +1,7 @@
 # android-unit-testing-example
 
+[![Build Status](https://travis-ci.org/patrickcousins/android-unit-testing-example.svg?branch=master)](https://travis-ci.org/patrickcousins/android-unit-testing-example)
+
 A very basic example of unit testing on Android.
 
 Uses the following libraries:
