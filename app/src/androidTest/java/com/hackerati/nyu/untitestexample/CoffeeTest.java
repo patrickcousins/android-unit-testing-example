@@ -90,7 +90,7 @@ public class CoffeeTest {
      *
      * //Exceptions
      * //Make sure invalid code throws the correct exception
-     * 
+     *
      * when(realObject).someMethod("Some invalid argument");
      * then(caughtException())
      *      .isInstanceOf(IllegalArgumentException.class)

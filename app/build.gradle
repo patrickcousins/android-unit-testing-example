@@ -2,49 +2,74 @@ buildscript {
     repositories {
         jcenter()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath 'org.robolectric:robolectric-gradle-plugin:0.14.1'
+        classpath 'org.robolectric:robolectric-gradle-plugin:1.0.1'
     }
 }
 
+
 apply plugin: 'com.android.application'
-apply plugin: 'robolectric'
+apply plugin: 'org.robolectric'
 
 android {
-    packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
-    }
-
-
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
-
+    buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "com.hackerati.nyu.unittestexample"
-        minSdkVersion 15
-        targetSdkVersion 18
+        minSdkVersion 10
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'LICENSE.txt'
     }
+}
+
+configurations.all {
+    exclude group: 'junit', module: 'junit-dep'
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('junit:junit:4.11') {
-        exclude module: 'hamcrest-core'
+
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+
+        jcenter()
     }
-    androidTestCompile('org.robolectric:robolectric:2.4') {
+
+    //google
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:support-annotations:22.0.0'
+
+
+
+    // Espresso UI testing
+    androidTestCompile('junit:junit:4.12') { exclude group: 'org.hamcrest' }
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.1') {
+        exclude group: 'junit'
+        exclude group: 'org.hamcrest'
+        exclude group:'com.android.support', module:'support-annotations'
+    }
+
+    androidTestCompile 'org.hamcrest:hamcrest-core:1.1',
+            'org.hamcrest:hamcrest-library:1.1',
+            'org.hamcrest:hamcrest-integration:1.1'
+
+    // Robolectric unit testing
+    testCompile('junit:junit:4.12') { exclude group: 'org.hamcrest' }
+    testCompile 'org.hamcrest:hamcrest-core:1.1',
+            'org.hamcrest:hamcrest-library:1.1',
+            'org.hamcrest:hamcrest-integration:1.1'
+
+    //TODO see if all these excludes are still needed
+    testCompile('org.robolectric:robolectric:3.0-SNAPSHOT') {
         exclude module: 'classworlds'
         exclude module: 'commons-logging'
         exclude module: 'httpclient'
@@ -60,15 +85,91 @@ dependencies {
         exclude module: 'wagon-file'
         exclude module: 'wagon-http-lightweight'
         exclude module: 'wagon-provider-api'
+        exclude group: 'org.hamcrest', module:'hamcrest-core'
+        exclude group: 'org.hamcrest', module:'hamcrest-library'
+        exclude group: 'org.hamcrest', module:'hamcrest-integration'
+        exclude group:'com.android.support', module:'support-v4'
+        exclude group:'com.android.support', module:'support-annotations'
+        exclude group:'com.android.support', module:'appcompat-v7'
+        exclude group:'com.android.support', module:'recyclerview-v7'
     }
-
-    androidTestCompile 'org.easytesting:fest-assert:1.4'
-    androidTestCompile 'com.squareup:fest-android:1.0.+'
-    androidTestCompile 'org.mockito:mockito-all:1.9.5'
-
 }
 
+import org.gradle.logging.StyledTextOutputFactory;
+import static org.gradle.logging.StyledTextOutput.Style;
+
 robolectric {
+    // Configure includes / excludes
     include '**/*Test.class'
     exclude '**/espresso/**/*.class'
+
+    // Configure max heap size of the test JVM
+    //maxHeapSize = '2048m'
+
+    // Configure the test JVM arguments - Does not apply to Java 8
+    //jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
+
+    // Specify max number of processes (default is 1)
+    //maxParallelForks = 4
+
+    // Specify max number of test classes to execute in a test process
+    // before restarting the process (default is unlimited)
+    //forkEvery = 150
+
+    // configure whether failing tests should fail the build
+    ignoreFailures true
+
+    // use afterTest to listen to the test execution results
+    afterTest { descriptor, result ->
+
+        System.setProperty('org.gradle.color.success', 'GREEN')
+        def out = services.get(StyledTextOutputFactory).create("blah")
+        def resultStyle = getResultStyle(String.valueOf(result.resultType))
+        out.style(Style.Info)
+        out.append("Executing test for ")
+        out.withStyle(Style.Normal).format("%s", "${descriptor.name}")
+        out.withStyle(resultStyle).format(" %s", "${result.resultType}")
+        out.println()
+    }
+}
+
+android.applicationVariants.all{ variant ->
+    variant.mergeResources.doLast{
+        def gitHash = getGitHash()
+        def timeStamp = getDate()
+
+        File valuesFile = file("${buildDir}/intermediates/res/${variant.dirName}/values/values.xml")
+        println("Replacing revision number in " + valuesFile)
+        println("Commit Hash: " + gitHash)
+        String content = valuesFile.getText('UTF-8')
+        content = content.replaceAll(/##HASHCODE##/, gitHash)
+        content = content.replaceAll(/##DATETIME##/, timeStamp)
+        valuesFile.write(content, 'UTF-8')
+    }
+}
+
+def getResultStyle(String result) {
+
+    def style = Style.Normal
+
+    switch (result) {
+        case "SUCCESS":
+            style = Style.Success
+            break
+        case "FAILED":
+            style = Style.Failure
+            break
+    }
+    return style
+}
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyy-MM-dd_HHmm')
+    return formattedDate
+}
+
+def getGitHash() {
+    def cmd = "git rev-parse --short HEAD"
+    def proc = cmd.execute()
+    return "(" + proc.text.trim() + ")"
 }

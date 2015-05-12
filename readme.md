@@ -13,6 +13,8 @@ Coming
 * [catch-exception] (https://github.com/Codearte/catch-exception)
 * Espresso 2
 * AssertJ (may replace fest)
+* JUnit @Rule
+* Parametrized testing with burst
 
 TODO
 
